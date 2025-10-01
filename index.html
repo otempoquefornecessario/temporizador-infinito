@@ -95,39 +95,49 @@
 
     .infinity {
       margin: 40px auto 20px;
-      width: 120px;
-      height: 80px;
+      width: 100px;
+      height: 70px;
+      opacity: 0.9;
       user-select: none;
     }
 
     .inf-path {
       fill: none;
       stroke: var(--accent);
-      stroke-width: 8;
+      stroke-width: 6;
       stroke-linecap: round;
       stroke-linejoin: round;
-      stroke-dasharray: 700;
-      stroke-dashoffset: 700;
-      transition: stroke-dashoffset 0.5s ease-out;
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: draw 6s linear infinite;
+      transform-origin: 50% 50%;
+    }
+
+    @keyframes draw {
+      0% {
+        stroke-dashoffset: 600;
+        transform: rotate(0deg);
+      }
+      50% {
+        stroke-dashoffset: 0;
+        transform: rotate(180deg);
+      }
+      100% {
+        stroke-dashoffset: 600;
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- SVG infinito robusto -->
-    <svg class="infinity" viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" aria-label="Símbolo do infinito">
-      <path id="inf-path" class="inf-path" d="
-        M 40 50 
-        C 40 20, 75 20, 75 50 
-        C 75 80, 110 80, 110 50 
-        C 110 20, 75 20, 75 50
-        C 75 80, 40 80, 40 50
-        Z" />
+    <svg class="infinity" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path class="inf-path" d="M20 40C20 19 60 19 60 40C60 61 100 61 100 40C100 19 60 19 60 40C60 61 20 61 20 40Z"/>
     </svg>
 
     <h1>
       Por quanto tempo te espero e esperarei
-      <svg class="heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" aria-label="Coração">
+      <svg class="heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
       </svg>
     </h1>
@@ -163,9 +173,6 @@
   </div>
 
   <script>
-    const infPath = document.getElementById('inf-path');
-    const pathLength = infPath.getTotalLength();
-
     function addMonths(date, months) {
       const d = new Date(date);
       const day = d.getDate();
@@ -212,21 +219,20 @@
     }
 
     function updateTimer() {
-      const start = new Date(2025, 2, 8, 19, 30, 0); // 08/03/2025 19:30
+      const start = new Date(2025, 2, 8, 19, 30, 0); // 8 de março de 2025 às 19:30
       const now = new Date();
-
       const diff = diffYMDHMS(start, now);
 
-      // Atualiza números
       document.getElementById('years').textContent = diff.years;
       document.getElementById('months').textContent = diff.months;
       document.getElementById('days').textContent = diff.days;
       document.getElementById('hours').textContent = pad(diff.hours);
       document.getElementById('minutes').textContent = pad(diff.minutes);
       document.getElementById('seconds').textContent = pad(diff.seconds);
+    }
 
-      // Total em segundos desde o início (pra usar no traçado)
-      const totalSeconds = Math.floor((now - start) / 1000);
-
-      // Definimos um tempo máximo para completar o traçado do infinito (exemplo: 1 ano em segundos)
-      const max
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
