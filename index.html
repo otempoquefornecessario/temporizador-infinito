@@ -32,7 +32,7 @@
     .container {
       max-width: 720px;
       padding: 24px;
-      display: block; /* Mostrar direto */
+      display: none; /* começa escondido */
     }
 
     h1 {
@@ -120,15 +120,53 @@
       100% { stroke-dashoffset: 600; transform: rotate(360deg); }
     }
 
-    /* BLOQUEIO DESATIVADO */
+    /* BLOQUEIO */
     #overlay {
-      display: none !important;
+      position: fixed;
+      inset: 0;
+      background: #0f1724ee;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
+      text-align: center;
+      padding: 24px;
+    }
+
+    #overlay h2 {
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    #overlay p {
+      color: #ccc;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    #countdown {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .refresh-btn {
+      padding: 10px 18px;
+      background: #ff7b7b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <!-- BLOQUEIO (desativado para teste) -->
+  <!-- BLOQUEIO -->
   <div id="overlay">
     <h2>Ainda não é hora…</h2>
     <p>Este conteúdo será liberado em:</p>
@@ -136,7 +174,7 @@
     <button class="refresh-btn" onclick="checkUnlock()">Verificar agora</button>
   </div>
 
-  <!-- CONTEÚDO PRINCIPAL -->
+  <!-- CONTEÚDO -->
   <div class="container" id="mainContent">
     <svg class="infinity" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
       <path class="inf-path" d="M20 40C20 19 60 19 60 40C60 61 100 61 100 40C100 19 60 19 60 40C60 61 20 61 20 40Z"/>
@@ -160,21 +198,23 @@
   </div>
 
   <script>
-    // Data inicial: 08/03/2025 19:30
-    const startDate = new Date(2025, 2, 8, 19, 30, 0);
+    const startDate = new Date(2025, 2, 8, 19, 30, 0); // 08 Mar 2025 19:30
+    const unlockDate = new Date(2025, 9, 8, 19, 30, 0); // 08 Out 2025 19:30
+
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.getElementById('mainContent');
+    const countdownEl = document.getElementById('countdown');
 
     function calculateTimeDifference(start, end) {
       let years = end.getFullYear() - start.getFullYear();
       let months = end.getMonth() - start.getMonth();
       let days = end.getDate() - start.getDate();
 
-      // Ajusta dias se ainda não completou o dia (considerando hora e minutos)
       if (
         days < 0 ||
         (days === 0 && (end.getHours() < start.getHours() || (end.getHours() === start.getHours() && end.getMinutes() < start.getMinutes())))
       ) {
         months--;
-        // Pega dias do mês anterior
         const previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
         days += previousMonth.getDate();
       }
@@ -187,35 +227,86 @@
       return { years, months, days };
     }
 
-    function startTimer() {
-      function updateTimer() {
-        const now = new Date();
-        if (now < startDate) return;
+    // Atualiza o temporizador (conta desde startDate até agora)
+    function updateTimer() {
+      const now = new Date();
+      if (now < startDate) return;
 
-        const diffMs = now - startDate;
-        const totalSeconds = Math.floor(diffMs / 1000);
+      const diffMs = now - startDate;
+      const totalSeconds = Math.floor(diffMs / 1000);
 
-        const seconds = totalSeconds % 60;
-        const minutes = Math.floor(totalSeconds / 60) % 60;
-        const hours = Math.floor(totalSeconds / 3600) % 24;
+      const seconds = totalSeconds % 60;
+      const minutes = Math.floor(totalSeconds / 60) % 60;
+      const hours = Math.floor(totalSeconds / 3600) % 24;
 
-        const { years, months, days } = calculateTimeDifference(startDate, now);
+      const { years, months, days } = calculateTimeDifference(startDate, now);
 
-        document.getElementById('years').textContent = years;
-        document.getElementById('months').textContent = months;
-        document.getElementById('days').textContent = days;
-        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-      }
-
-      updateTimer();
-      setInterval(updateTimer, 1000);
+      document.getElementById('years').textContent = years;
+      document.getElementById('months').textContent = months;
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
     }
 
-    // Iniciar o temporizador
-    startTimer();
+    // Atualiza o contador regressivo para a liberação (overlay)
+    function updateCountdown() {
+      const now = new Date();
+      const diff = unlockDate - now;
+
+      if (diff <= 0) {
+        // Chegou a hora de liberar
+        overlay.style.display = 'none';
+        mainContent.style.display = 'block';
+        startTimer(); // inicia temporizador real-time
+        return;
+      }
+
+      const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+      const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+      const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+
+      countdownEl.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    let timerInterval;
+
+    function startTimer() {
+      updateTimer();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function checkUnlock() {
+      const now = new Date();
+      if (now >= unlockDate) {
+        overlay.style.display = 'none';
+        mainContent.style.display = 'block';
+        startTimer();
+      } else {
+        updateCountdown();
+      }
+    }
+
+    // Inicialização:
+    window.onload = () => {
+      const now = new Date();
+
+      if (now >= unlockDate) {
+        // Já liberado, mostra conteúdo direto e inicia contador
+        overlay.style.display = 'none';
+        mainContent.style.display = 'block';
+        startTimer();
+      } else {
+        // Bloqueado: mostra overlay e contador regressivo
+        overlay.style.display = 'flex';
+        mainContent.style.display = 'none';
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+    };
   </script>
+
 </body>
 </html>
+
 
