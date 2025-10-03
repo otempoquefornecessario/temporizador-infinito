@@ -114,22 +114,59 @@
     }
 
     @keyframes draw {
-      0% {
-        stroke-dashoffset: 600;
-        transform: rotate(0deg);
-      }
-      50% {
-        stroke-dashoffset: 0;
-        transform: rotate(180deg);
-      }
-      100% {
-        stroke-dashoffset: 600;
-        transform: rotate(360deg);
-      }
+      0% { stroke-dashoffset: 600; transform: rotate(0deg); }
+      50% { stroke-dashoffset: 0; transform: rotate(180deg); }
+      100% { stroke-dashoffset: 600; transform: rotate(360deg); }
+    }
+
+    /* Overlay de bloqueio */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: #0f1724ee;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+
+    #overlay h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: #ff7b7b;
+    }
+
+    #overlay p {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #ccc;
+    }
+
+    #countdown {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .refresh-btn {
+      margin-top: 16px;
+      background: #ff7b7b;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+
   <div class="container">
     <svg class="infinity" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path class="inf-path" d="M20 40C20 19 60 19 60 40C60 61 100 61 100 40C100 19 60 19 60 40C60 61 20 61 20 40Z"/>
@@ -145,94 +182,6 @@
     <p class="sub">E o tempo seguirá, enquanto eu sigo te esperando.</p>
 
     <div class="timer" aria-label="Temporizador de tempo decorrido">
-      <div class="time-block" role="timer">
-        <span class="value" id="years">0</span>
-        <span class="label">anos</span>
-      </div>
-      <div class="time-block" role="timer">
-        <span class="value" id="months">0</span>
-        <span class="label">meses</span>
-      </div>
-      <div class="time-block" role="timer">
-        <span class="value" id="days">0</span>
-        <span class="label">dias</span>
-      </div>
-      <div class="time-block" role="timer">
-        <span class="value" id="hours">00</span>
-        <span class="label">horas</span>
-      </div>
-      <div class="time-block" role="timer">
-        <span class="value" id="minutes">00</span>
-        <span class="label">minutos</span>
-      </div>
-      <div class="time-block" role="timer">
-        <span class="value" id="seconds">00</span>
-        <span class="label">segundos</span>
-      </div>
-    </div>
-  </div>
+      <div class="time-block
 
-  <script>
-    function addMonths(date, months) {
-      const d = new Date(date);
-      const day = d.getDate();
-      d.setMonth(d.getMonth() + months);
-      if (d.getDate() !== day) d.setDate(0);
-      return d;
-    }
 
-    function diffYMDHMS(start, end) {
-      if (end < start) return {years:0, months:0, days:0, hours:0, minutes:0, seconds:0};
-      let totalMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
-      let anchor = addMonths(start, totalMonths);
-      if (anchor > end) {
-        totalMonths--;
-        anchor = addMonths(start, totalMonths);
-      }
-      const years = Math.floor(totalMonths / 12);
-      const months = totalMonths % 12;
-      const days = Math.floor((end - anchor) / (1000 * 60 * 60 * 24));
-      let hours = end.getHours() - anchor.getHours();
-      let minutes = end.getMinutes() - anchor.getMinutes();
-      let seconds = end.getSeconds() - anchor.getSeconds();
-
-      if (seconds < 0) {
-        seconds += 60;
-        minutes--;
-      }
-      if (minutes < 0) {
-        minutes += 60;
-        hours--;
-      }
-      if (hours < 0) {
-        hours += 24;
-      }
-
-      return {
-        years, months, days,
-        hours, minutes, seconds
-      };
-    }
-
-    function pad(n) {
-      return n.toString().padStart(2, '0');
-    }
-
-    function updateTimer() {
-      const start = new Date(2025, 2, 8, 19, 30, 0); // 8 de março de 2025 às 19:30
-      const now = new Date();
-      const diff = diffYMDHMS(start, now);
-
-      document.getElementById('years').textContent = diff.years;
-      document.getElementById('months').textContent = diff.months;
-      document.getElementById('days').textContent = diff.days;
-      document.getElementById('hours').textContent = pad(diff.hours);
-      document.getElementById('minutes').textContent = pad(diff.minutes);
-      document.getElementById('seconds').textContent = pad(diff.seconds);
-    }
-
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  </script>
-</body>
-</html>
