@@ -32,7 +32,7 @@
     .container {
       max-width: 720px;
       padding: 24px;
-      display: none; /* Oculto até liberar */
+      display: block; /* <- FORÇADO PARA APARECER */
     }
 
     h1 {
@@ -120,52 +120,15 @@
       100% { stroke-dashoffset: 600; transform: rotate(360deg); }
     }
 
-    /* BLOQUEIO */
+    /* BLOQUEIO DESATIVADO */
     #overlay {
-      position: fixed;
-      inset: 0;
-      background: #0f1724ee;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      color: #fff;
-      text-align: center;
-      padding: 24px;
-    }
-
-    #overlay h2 {
-      font-size: 24px;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-
-    #overlay p {
-      color: #ccc;
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
-
-    #countdown {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .refresh-btn {
-      padding: 10px 18px;
-      background: #ff7b7b;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+      display: none !important;
     }
   </style>
 </head>
 <body>
-  <!-- BLOQUEIO -->
+
+  <!-- BLOQUEIO DESATIVADO -->
   <div id="overlay">
     <h2>Ainda não é hora…</h2>
     <p>Este conteúdo será liberado em:</p>
@@ -197,31 +160,47 @@
   </div>
 
   <script>
-    // DATA DE LIBERAÇÃO
-    const unlockDate = new Date(2025, 9, 8, 19, 30, 0); // Outubro é mês 9
-    const startDate = new Date(2025, 2, 8, 19, 30, 0); // 08/03/2025 às 19:30
+    // DATA DE INÍCIO (08/03/2025 às 19:30)
+    const startDate = new Date(2025, 2, 8, 19, 30, 0); // Março = mês 2
 
-    function updateCountdown() {
-      const now = new Date();
-      const diff = unlockDate - now;
+    function startTimer() {
+      function updateTimer() {
+        const now = new Date();
+        let diff = now - startDate;
 
-      if (diff <= 0) {
-        checkUnlock();
-        return;
+        if (diff < 0) diff = 0;
+
+        const totalSeconds = Math.floor(diff / 1000);
+
+        const seconds = totalSeconds % 60;
+        const minutes = Math.floor(totalSeconds / 60) % 60;
+        const hours = Math.floor(totalSeconds / 3600) % 24;
+
+        const totalDays = Math.floor(totalSeconds / (3600 * 24));
+
+        const years = Math.floor(totalDays / 365);
+        const months = Math.floor((totalDays % 365) / 30);
+        const days = (totalDays % 365) % 30;
+
+        document.getElementById('years').textContent = years;
+        document.getElementById('months').textContent = months;
+        document.getElementById('days').textContent = days;
+        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
       }
 
-      const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-      const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
-      const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-
-      document.getElementById('countdown').textContent = `${hours}:${minutes}:${seconds}`;
+      setInterval(updateTimer, 1000);
+      updateTimer();
     }
 
-    function checkUnlock() {
-      const now = new Date();
-      if (now >= unlockDate) {
-        document.getElementById('overlay').style.display = 'none';
-       
+    // Iniciar imediatamente
+    startTimer();
+  </script>
+</body>
+</html>
+
+
 
 
 
