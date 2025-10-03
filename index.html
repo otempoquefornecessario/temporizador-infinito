@@ -159,39 +159,60 @@
     </div>
   </div>
 
-  <script>
-    // DATA DE INÍCIO (08/03/2025 às 19:30)
-    const startDate = new Date(2025, 2, 8, 19, 30, 0); // Março = mês 2
+ // DATA DE INÍCIO REAL
+const startDate = new Date(2025, 2, 8, 19, 30, 0); // 08/03/2025 às 19:30
 
-    function startTimer() {
-      function updateTimer() {
-        const now = new Date();
-        let diff = now - startDate;
+function calculateTimeDifference(start, end) {
+  let years = end.getFullYear() - start.getFullYear();
+  let months = end.getMonth() - start.getMonth();
+  let days = end.getDate() - start.getDate();
 
-        if (diff < 0) diff = 0;
+  // Corrigir se o dia ainda não foi completado
+  if (
+    days < 0 ||
+    (days === 0 && (end.getHours() < start.getHours() || (end.getHours() === start.getHours() && end.getMinutes() < start.getMinutes())))
+  ) {
+    months--;
+    const previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+    days += previousMonth.getDate();
+  }
 
-        const totalSeconds = Math.floor(diff / 1000);
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
 
-        const seconds = totalSeconds % 60;
-        const minutes = Math.floor(totalSeconds / 60) % 60;
-        const hours = Math.floor(totalSeconds / 3600) % 24;
+  return { years, months, days };
+}
 
-        const totalDays = Math.floor(totalSeconds / (3600 * 24));
+function startTimer() {
+  function updateTimer() {
+    const now = new Date();
+    const diff = now - startDate;
+    if (diff < 0) return;
 
-        const years = Math.floor(totalDays / 365);
-        const months = Math.floor((totalDays % 365) / 30);
-        const days = (totalDays % 365) % 30;
+    const totalSeconds = Math.floor(diff / 1000);
+    const seconds = totalSeconds % 60;
+    const minutes = Math.floor(totalSeconds / 60) % 60;
+    const hours = Math.floor(totalSeconds / 3600) % 24;
 
-        document.getElementById('years').textContent = years;
-        document.getElementById('months').textContent = months;
-        document.getElementById('days').textContent = days;
-        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-      }
+    const { years, months, days } = calculateTimeDifference(startDate, now);
 
-      setInterval(updateTimer, 1000);
-      updateTimer();
+    document.getElementById('years').textContent = years;
+    document.getElementById('months').textContent = months;
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+    document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+  }
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+}
+
+// CHAMA O TIMER DIRETAMENTE (caso desbloqueado)
+startTimer();
+
     }
 
     // Iniciar imediatamente
@@ -199,6 +220,7 @@
   </script>
 </body>
 </html>
+
 
 
 
