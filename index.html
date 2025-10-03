@@ -32,7 +32,7 @@
     .container {
       max-width: 720px;
       padding: 24px;
-      display: none; /* Começa oculto até o desbloqueio */
+      display: none; /* Oculto até liberar */
     }
 
     h1 {
@@ -120,7 +120,7 @@
       100% { stroke-dashoffset: 600; transform: rotate(360deg); }
     }
 
-    /* Overlay de bloqueio */
+    /* BLOQUEIO */
     #overlay {
       position: fixed;
       inset: 0;
@@ -131,43 +131,40 @@
       justify-content: center;
       flex-direction: column;
       color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
       text-align: center;
+      padding: 24px;
     }
 
     #overlay h2 {
       font-size: 24px;
-      margin-bottom: 12px;
-      color: #ff7b7b;
+      color: var(--accent);
+      margin-bottom: 8px;
     }
 
     #overlay p {
-      font-size: 16px;
-      margin-bottom: 16px;
       color: #ccc;
+      font-size: 16px;
+      margin-bottom: 12px;
     }
 
     #countdown {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
-      color: #fff;
+      margin-bottom: 20px;
     }
 
     .refresh-btn {
-      margin-top: 16px;
+      padding: 10px 18px;
       background: #ff7b7b;
       color: white;
-      padding: 10px 18px;
-      border-radius: 8px;
       border: none;
-      font-weight: bold;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-
   <!-- BLOQUEIO -->
   <div id="overlay">
     <h2>Ainda não é hora…</h2>
@@ -176,17 +173,15 @@
     <button class="refresh-btn" onclick="checkUnlock()">Verificar agora</button>
   </div>
 
-  <!-- CONTEÚDO PRINCIPAL -->
+  <!-- CONTEÚDO -->
   <div class="container" id="mainContent">
-    <svg class="infinity" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg class="infinity" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
       <path class="inf-path" d="M20 40C20 19 60 19 60 40C60 61 100 61 100 40C100 19 60 19 60 40C60 61 20 61 20 40Z"/>
     </svg>
 
     <h1>
       Por quanto tempo te espero e esperarei
-      <svg class="heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-      </svg>
+      <svg class="heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
     </h1>
 
     <p class="sub">E o tempo seguirá, enquanto eu sigo te esperando.</p>
@@ -202,18 +197,32 @@
   </div>
 
   <script>
-    // Data de liberação: 08/10/2025 19:30
-    const unlockDate = new Date(2025, 9, 8, 19, 30, 0); // Mês 9 = Outubro
+    // DATA DE LIBERAÇÃO
+    const unlockDate = new Date(2025, 9, 8, 19, 30, 0); // Outubro é mês 9
+    const startDate = new Date(2025, 2, 8, 19, 30, 0); // 08/03/2025 às 19:30
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = unlockDate - now;
+
+      if (diff <= 0) {
+        checkUnlock();
+        return;
+      }
+
+      const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+      const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+      const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+
+      document.getElementById('countdown').textContent = `${hours}:${minutes}:${seconds}`;
+    }
 
     function checkUnlock() {
       const now = new Date();
       if (now >= unlockDate) {
         document.getElementById('overlay').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
-      } else {
-        const diff = unlockDate - now;
-        const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-        const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
-        const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2
+       
+
+
 
 
