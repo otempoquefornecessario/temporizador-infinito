@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Por quanto tempo te espero e esperarei</title>
   <style>
     :root {
@@ -11,10 +11,7 @@
       --muted: #94a3b8;
     }
 
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
 
     body {
       margin: 0;
@@ -32,7 +29,7 @@
     .container {
       max-width: 720px;
       padding: 24px;
-      display: none; /* Escondido até liberação */
+      display: none; /* ficará visível via JS ao carregar */
     }
 
     h1 {
@@ -55,16 +52,9 @@
       user-select: none;
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-    }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
 
-    .sub {
-      color: var(--muted);
-      font-size: 15px;
-      margin-bottom: 28px;
-    }
+    .sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
 
     .timer {
       display: flex;
@@ -74,25 +64,15 @@
     }
 
     .time-block {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255,255,255,0.05);
       padding: 12px 16px;
       border-radius: 10px;
       min-width: 90px;
       user-select: none;
     }
 
-    .time-block span.value {
-      display: block;
-      font-size: 24px;
-      font-weight: bold;
-      color: #fff;
-    }
-
-    .time-block span.label {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
+    .time-block span.value { display:block; font-size:24px; font-weight:bold; color:#fff; }
+    .time-block span.label { font-size:13px; color:var(--muted); margin-top:4px; }
 
     .infinity {
       margin: 40px auto 20px;
@@ -120,12 +100,13 @@
       100% { stroke-dashoffset: 600; transform: rotate(360deg); }
     }
 
+    /* overlay existe mas ficará oculto */
     #overlay {
+      display: none;
       position: fixed;
       inset: 0;
       background: #0f1724ee;
       z-index: 9999;
-      display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
@@ -134,39 +115,16 @@
       padding: 24px;
     }
 
-    #overlay h2 {
-      font-size: 24px;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-
-    #overlay p {
-      color: #ccc;
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
-
-    #countdown {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .refresh-btn {
-      padding: 10px 18px;
-      background: #ff7b7b;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+    #overlay h2 { font-size:24px; color:var(--accent); margin-bottom:8px; }
+    #overlay p { color:#ccc; font-size:16px; margin-bottom:12px; }
+    #countdown { font-size:18px; font-weight:bold; margin-bottom:20px; }
+    .refresh-btn { padding:10px 18px; background:#ff7b7b; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
   </style>
 </head>
 <body>
 
-  <!-- Overlay de bloqueio -->
-  <div id="overlay">
+  <!-- Overlay (mantido no DOM, mas oculto) -->
+  <div id="overlay" aria-hidden="true">
     <h2>Ainda não é hora…</h2>
     <p>Este conteúdo será liberado em:</p>
     <div id="countdown">Carregando…</div>
@@ -174,18 +132,128 @@
   </div>
 
   <!-- Conteúdo principal -->
-  <div class="container" id="mainContent">
+  <div class="container" id="mainContent" aria-live="polite">
     <svg class="infinity" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
       <path class="inf-path" d="M20 40C20 19 60 19 60 40C60 61 100 61 100 40C100 19 60 19 60 40C60 61 20 61 20 40Z"/>
     </svg>
 
     <h1>
       Por quanto tempo te espero e esperarei
-      <svg class="heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <svg class="heart" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
     </h1>
 
     <p class="sub">E o tempo seguirá, enquanto eu sigo te esperando.</p>
 
-    <div class="timer">
+    <div class="timer" role="timer" aria-atomic="true">
       <div class="time-block"><span class="value" id="years">0</span><span class="label">anos</span></div>
-      <div class="time-block"><span class="value" id="months">0</span><span class="label">meses</span></d
+      <div class="time-block"><span class="value" id="months">0</span><span class="label">meses</span></div>
+      <div class="time-block"><span class="value" id="days">0</span><span class="label">dias</span></div>
+      <div class="time-block"><span class="value" id="hours">00</span><span class="label">horas</span></div>
+      <div class="time-block"><span class="value" id="minutes">00</span><span class="label">minutos</span></div>
+      <div class="time-block"><span class="value" id="seconds">00</span><span class="label">segundos</span></div>
+    </div>
+  </div>
+
+  <script>
+    // Data inicial: 08/03/2025 19:30 (JavaScript: month index 2 => março)
+    const startDate = new Date(2025, 2, 8, 19, 30, 0);
+
+    // (opcional) unlockDate mantido caso queira reativar bloqueio no futuro
+    const unlockDate = new Date(2025, 9, 8, 19, 30, 0); // 08/10/2025 19:30 (mês 9 = outubro)
+
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.getElementById('mainContent');
+    const countdownEl = document.getElementById('countdown');
+
+    // Calcula anos, meses e dias entre duas datas (aproximação por calendário)
+    function calculateTimeDifference(start, end) {
+      let years = end.getFullYear() - start.getFullYear();
+      let months = end.getMonth() - start.getMonth();
+      let days = end.getDate() - start.getDate();
+
+      // Ajuste considerando hora/minuto (se necessário)
+      if (
+        days < 0 ||
+        (days === 0 && (
+          end.getHours() < start.getHours() ||
+          (end.getHours() === start.getHours() && end.getMinutes() < start.getMinutes())
+        ))
+      ) {
+        months--;
+        const previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        days += previousMonth.getDate();
+      }
+
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      return { years, months, days };
+    }
+
+    // Inicia o contador que conta desde startDate até agora
+    let timerInterval = null;
+    function startTimer() {
+      function updateTimer() {
+        const now = new Date();
+        if (now < startDate) {
+          // Se a data inicial ainda não ocorreu, mostra zeros (ou pode ocultar)
+          document.getElementById('years').textContent = 0;
+          document.getElementById('months').textContent = 0;
+          document.getElementById('days').textContent = 0;
+          document.getElementById('hours').textContent = "00";
+          document.getElementById('minutes').textContent = "00";
+          document.getElementById('seconds').textContent = "00";
+          return;
+        }
+
+        const diffMs = now - startDate;
+        const totalSeconds = Math.floor(diffMs / 1000);
+
+        const seconds = totalSeconds % 60;
+        const minutes = Math.floor(totalSeconds / 60) % 60;
+        const hours = Math.floor(totalSeconds / 3600) % 24;
+
+        const { years, months, days } = calculateTimeDifference(startDate, now);
+
+        document.getElementById('years').textContent = years;
+        document.getElementById('months').textContent = months;
+        document.getElementById('days').textContent = days;
+        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+      }
+
+      // primeira atualização imediata e depois a cada segundo
+      updateTimer();
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    // Função de verificação (mantida para compatibilidade com botão)
+    function checkUnlock() {
+      // Como o conteúdo está desbloqueado por padrão neste arquivo,
+      // basta garantir que o main seja visível.
+      overlay.style.display = 'none';
+      mainContent.style.display = 'block';
+      startTimer();
+    }
+
+    // Ao carregar a página: liberar conteúdo imediatamente (desbloqueado)
+    window.addEventListener('load', () => {
+      overlay.style.display = 'none';       // oculto
+      mainContent.style.display = 'block';  // mostrar conteúdo
+      startTimer();                         // inicia contador
+    });
+
+    // --- Notas:
+    // - Se quiser reativar o bloqueio baseado em `unlockDate`, substitua a lógica do load
+    //   por checagem de `if (new Date() >= unlockDate) { ... } else { ... }`
+    // - startDate: março = 2; outubro = 9 (mês começa em 0)
+  </script>
+</body>
+</html>
+
