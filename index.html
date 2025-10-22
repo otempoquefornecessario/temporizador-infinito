@@ -1,31 +1,178 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>00:00:00</title>
-  <style>
-    body {
-      background-color: #000;
-      color: #ffffff;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
+.container {
+      max-width: 720px;
+      padding: 24px;
+      display: none; /* começa escondido */
+      display: none; /* Oculto até liberar */
     }
 
-    .timer {
-      font-size: 6em;
-      letter-spacing: 6px;
-    }
+    h1 {
+@@ -165,7 +165,6 @@
   </style>
 </head>
 <body>
-  <div class="timer">00:00:00</div>
+
+  <!-- BLOQUEIO -->
+  <div id="overlay">
+    <h2>Ainda não é hora…</h2>
+@@ -198,49 +197,50 @@ <h1>
+  </div>
+
+  <script>
+    const startDate = new Date(2025, 2, 8, 19, 30, 0); // 08 Mar 2025 19:30
+    const unlockDate = new Date(2025, 9, 8, 19, 30, 0); // 08 Out 2025 19:30
+    const unlockDate = new Date(2025, 9, 8, 19, 30, 0); // 08 de outubro de 2025 às 19:30
+    const startDate = new Date(2025, 2, 8, 19, 30, 0);  // 08 de março de 2025 às 19:30
+
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.getElementById('mainContent');
+    const countdownEl = document.getElementById('countdown');
+
+    function calculateTimeDifference(start, end) {
+      let years = end.getFullYear() - start.getFullYear();
+      let months = end.getMonth() - start.getMonth();
+      let days = end.getDate() - start.getDate();
+    // Função para formatar e mostrar o tempo passado desde startDate até agora
+    function updateTimer() {
+      const now = new Date();
+
+      if (
+        days < 0 ||
+        (days === 0 && (end.getHours() < start.getHours() || (end.getHours() === start.getHours() && end.getMinutes() < start.getMinutes())))
+      ) {
+      // Calcula a diferença total em meses, dias, horas, minutos e segundos
+      let years = now.getFullYear() - startDate.getFullYear();
+      let months = now.getMonth() - startDate.getMonth();
+      let days = now.getDate() - startDate.getDate();
+      let hours = now.getHours() - startDate.getHours();
+      let minutes = now.getMinutes() - startDate.getMinutes();
+      let seconds = now.getSeconds() - startDate.getSeconds();
+
+      // Ajustes caso algum valor seja negativo
+      if (seconds < 0) {
+        seconds += 60;
+        minutes--;
+      }
+      if (minutes < 0) {
+        minutes += 60;
+        hours--;
+      }
+      if (hours < 0) {
+        hours += 24;
+        days--;
+      }
+      if (days < 0) {
+        // Ajusta os dias considerando o mês anterior
+        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+        days += prevMonth;
+        months--;
+        const previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        days += previousMonth.getDate();
+      }
+
+      if (months < 0) {
+        years--;
+        months += 12;
+        years--;
+      }
+
+      return { years, months, days };
+    }
+
+    // Atualiza o temporizador (conta desde startDate até agora)
+    function updateTimer() {
+      const now = new Date();
+      if (now < startDate) return;
+
+      const diffMs = now - startDate;
+      const totalSeconds = Math.floor(diffMs / 1000);
+
+      const seconds = totalSeconds % 60;
+      const minutes = Math.floor(totalSeconds / 60) % 60;
+      const hours = Math.floor(totalSeconds / 3600) % 24;
+
+      const { years, months, days } = calculateTimeDifference(startDate, now);
+
+      // Atualiza o conteúdo HTML
+      document.getElementById('years').textContent = years;
+      document.getElementById('months').textContent = months;
+      document.getElementById('days').textContent = days;
+@@ -249,33 +249,31 @@ <h1>
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    // Atualiza o contador regressivo para a liberação (overlay)
+    // Função para mostrar o countdown regressivo no overlay
+    function updateCountdown() {
+      const now = new Date();
+      const diff = unlockDate - now;
+
+      if (diff <= 0) {
+        // Chegou a hora de liberar
+        // Hora de liberar o conteúdo
+        overlay.style.display = 'none';
+        mainContent.style.display = 'block';
+        startTimer(); // inicia temporizador real-time
+        startTimer();
+        return;
+      }
+
+      const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+      const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+      const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+
+      countdownEl.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    let timerInterval;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+    function startTimer() {
+      updateTimer();
+      timerInterval = setInterval(updateTimer, 1000);
+      countdownEl.textContent = `${days} dia${days !== 1 ? 's' : ''} ` +
+                                `${hours} hora${hours !== 1 ? 's' : ''} ` +
+                                `${minutes} minuto${minutes !== 1 ? 's' : ''} ` +
+                                `${seconds} segundo${seconds !== 1 ? 's' : ''}`;
+    }
+
+    // Verifica se já pode liberar o conteúdo
+    function checkUnlock() {
+      const now = new Date();
+      if (now >= unlockDate) {
+@@ -287,26 +285,27 @@ <h1>
+      }
+    }
+
+    // Inicialização:
+    // Inicia o temporizador principal
+    function startTimer() {
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    }
+
+    // Inicialização
+    window.onload = () => {
+      const now = new Date();
+
+      if (now >= unlockDate) {
+        // Já liberado, mostra conteúdo direto e inicia contador
+        overlay.style.display = 'none';
+        mainContent.style.display = 'block';
+        startTimer();
+      } else {
+        // Bloqueado: mostra overlay e contador regressivo
+        overlay.style.display = 'flex';
+        mainContent.style.display = 'none';
+        overlay.style.display = 'flex';
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+    };
+  </script>
+
 </body>
 </html>
-
-
-
 
