@@ -2,6 +2,16 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4CX5Y5DF60"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4CX5Y5DF60');
+  </script>
+
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Por quanto tempo te espero e esperarei</title>
   <style>
@@ -100,7 +110,6 @@
       100% { stroke-dashoffset: 600; transform: rotate(360deg); }
     }
 
-    /* overlay existe mas ficará oculto */
     #overlay {
       display: none;
       position: fixed;
@@ -123,7 +132,6 @@
 </head>
 <body>
 
-  <!-- Overlay (mantido no DOM, mas oculto) -->
   <div id="overlay" aria-hidden="true">
     <h2>Ainda não é hora…</h2>
     <p>Este conteúdo será liberado em:</p>
@@ -131,7 +139,6 @@
     <button class="refresh-btn" onclick="checkUnlock()">Verificar agora</button>
   </div>
 
-  <!-- Conteúdo principal -->
   <div class="container" id="mainContent" aria-live="polite">
     <svg class="infinity" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
       <path class="inf-path" d="M20 40C20 19 60 19 60 40C60 61 100 61 100 40C100 19 60 19 60 40C60 61 20 61 20 40Z"/>
@@ -157,23 +164,18 @@
   </div>
 
   <script>
-    // Data inicial: 08/03/2025 19:30 (JavaScript: month index 2 => março)
     const startDate = new Date(2025, 2, 8, 19, 30, 0);
-
-    // (opcional) unlockDate mantido caso queira reativar bloqueio no futuro
-    const unlockDate = new Date(2025, 9, 8, 19, 30, 0); // 08/10/2025 19:30 (mês 9 = outubro)
+    const unlockDate = new Date(2025, 9, 8, 19, 30, 0);
 
     const overlay = document.getElementById('overlay');
     const mainContent = document.getElementById('mainContent');
     const countdownEl = document.getElementById('countdown');
 
-    // Calcula anos, meses e dias entre duas datas (aproximação por calendário)
     function calculateTimeDifference(start, end) {
       let years = end.getFullYear() - start.getFullYear();
       let months = end.getMonth() - start.getMonth();
       let days = end.getDate() - start.getDate();
 
-      // Ajuste considerando hora/minuto (se necessário)
       if (
         days < 0 ||
         (days === 0 && (
@@ -194,13 +196,11 @@
       return { years, months, days };
     }
 
-    // Inicia o contador que conta desde startDate até agora
     let timerInterval = null;
     function startTimer() {
       function updateTimer() {
         const now = new Date();
         if (now < startDate) {
-          // Se a data inicial ainda não ocorreu, mostra zeros (ou pode ocultar)
           document.getElementById('years').textContent = 0;
           document.getElementById('months').textContent = 0;
           document.getElementById('days').textContent = 0;
@@ -227,33 +227,25 @@
         document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
       }
 
-      // primeira atualização imediata e depois a cada segundo
       updateTimer();
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(updateTimer, 1000);
     }
 
-    // Função de verificação (mantida para compatibilidade com botão)
     function checkUnlock() {
-      // Como o conteúdo está desbloqueado por padrão neste arquivo,
-      // basta garantir que o main seja visível.
       overlay.style.display = 'none';
       mainContent.style.display = 'block';
       startTimer();
     }
 
-    // Ao carregar a página: liberar conteúdo imediatamente (desbloqueado)
     window.addEventListener('load', () => {
-      overlay.style.display = 'none';       // oculto
-      mainContent.style.display = 'block';  // mostrar conteúdo
-      startTimer();                         // inicia contador
+      overlay.style.display = 'none';
+      mainContent.style.display = 'block';
+      startTimer();
     });
-
-    // --- Notas:
-    // - Se quiser reativar o bloqueio baseado em `unlockDate`, substitua a lógica do load
-    //   por checagem de `if (new Date() >= unlockDate) { ... } else { ... }`
-    // - startDate: março = 2; outubro = 9 (mês começa em 0)
   </script>
 </body>
 </html>
+
+
 
